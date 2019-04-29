@@ -1,4 +1,4 @@
-"""Access Service Setup"""
+"""Match Service Setup"""
 from match import APP
 
 if __name__ == "__main__":
