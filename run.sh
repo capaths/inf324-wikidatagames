@@ -10,15 +10,15 @@ function run() {
     docker run -p "$3:5000" -d --name $2 $1
 }
 
-clean access-service
-clean chat-service
-clean match-service
-clean player-service
-clean ticket-service
+. ./ports.cfg
 
-. ports.cfg
-run capaths/games-access access-service  $access
-run capaths/games-chat chat-service  $chat
-run capaths/games-match match-service  $match
-run capaths/games-player player-service  $player
-run capaths/games-ticket ticket-service  $ticket
+Services=("access" "chat" "match" "player" "ticket")
+Ports=("$access" "$chat" "$match" "$player" "$ticket")
+
+for i in "${!Services[@]}"; do 
+    service="${Services[$i]}"
+    port="${Ports[$i]}"
+    
+    clean "$service-service"
+    run "capaths/games-$service" "$service-service"  "${Ports[$i]}"
+done
