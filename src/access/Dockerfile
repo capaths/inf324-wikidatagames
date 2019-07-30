@@ -9,7 +9,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY config.yaml ./
 COPY run.sh ./
+
 COPY access/service.py ./
+COPY access/secret.py ./
+COPY access/authorization.py ./
 
 RUN chmod +x ./run.sh
 

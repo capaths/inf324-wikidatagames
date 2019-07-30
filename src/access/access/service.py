@@ -3,7 +3,7 @@
 from nameko.rpc import rpc
 import jwt
 
-from .secret import JWT_SECRET
+from secret import JWT_SECRET
 
 
 class NotAuthenticated(Exception):
@@ -21,7 +21,7 @@ class AccessService:
                 'permissions': [],
                 'roles': []
             }, JWT_SECRET)
-            return token
+            return token.decode()
         raise NotAuthenticated()
 
     @rpc

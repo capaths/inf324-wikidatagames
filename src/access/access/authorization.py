@@ -2,7 +2,7 @@ from nameko.extensions import DependencyProvider
 
 import jwt
 
-from .secret import JWT_SECRET
+from secret import JWT_SECRET
 
 
 class Authorization(DependencyProvider):

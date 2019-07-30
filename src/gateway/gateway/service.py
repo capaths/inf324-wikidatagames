@@ -1,9 +1,10 @@
 """ Gateway """
 
-import json
-
 from nameko.rpc import RpcProxy
 from nameko.web.handlers import http
+from nameko.exceptions import BadRequest
+
+from schemas import LoginSchema
 
 
 class GatewayService:
@@ -25,9 +26,31 @@ class GatewayService:
         return self.player_rpc.get_player("user")
 
     @http("POST", "/login")
-    def login(self, username, password):
-        return self.access_rpc.login(username, password)
+    def login(self, request):
+        schema = LoginSchema(strict=True)
+
+        try:
+            login_data = schema.loads(request.get_data(as_text=True)).data
+        except ValueError as exc:
+            raise BadRequest("Invalid json: {}".format(exc))
+
+        username = login_data["username"]
+        password = login_data["password"]
+
+        jwt = self.auth.login(username, password)
+        return jwt
 
     @http("POST", "/signup")
-    def signup(self, username, password, country):
-        return self.access_rpc.signup(username, password, country)
+    def signup(self, request):
+        schema = LoginSchema(strict=True)
+
+        try:
+            login_data = schema.loads(request.get_data(as_text=True)).data
+        except ValueError as exc:
+            raise BadRequest("Invalid json: {}".format(exc))
+
+        username = login_data["username"]
+        password = login_data["password"]
+
+        jwt = self.auth.signup(username, password)
+        return jwt
