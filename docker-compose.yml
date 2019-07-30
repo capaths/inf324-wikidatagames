@@ -1,0 +1,85 @@
+version: "3"
+services:
+  rabbitmq:
+    container_name: games-rabbitmq
+    image: rabbitmq:3.7-management
+    ports:
+        - "15673:15672"
+    restart: always
+    logging:
+      driver: none
+
+  chat:
+    container_name: games-chat
+    build: ./src/chat
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+
+  match:
+    container_name: games-match
+    build: ./src/match
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+
+  player:
+    container_name: games-player
+    build: ./src/player
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+
+  access:
+    container_name: games-access
+    build: ./src/access
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+
+  gateway:
+    container_name: games-gateway
+    build: ./src/gateway
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
