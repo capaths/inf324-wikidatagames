@@ -6,8 +6,6 @@ services:
     ports:
         - "15673:15672"
     restart: always
-    logging:
-      driver: none
 
   chat:
     container_name: games-chat
@@ -69,10 +67,27 @@ services:
         RABBIT_PORT: "5672"
         RABBIT_MANAGEMENT_PORT: "15672"
 
+  ticket:
+    container_name: games-ticket
+    build: ./src/ticket
+    restart: always
+    depends_on:
+      - rabbitmq
+    links:
+        - "rabbitmq:games-rabbitmq"
+    environment:
+        RABBIT_PASSWORD: "guest"
+        RABBIT_USER: "guest"
+        RABBIT_HOST: "rabbitmq"
+        RABBIT_PORT: "5672"
+        RABBIT_MANAGEMENT_PORT: "15672"
+
   gateway:
     container_name: games-gateway
     build: ./src/gateway
-    restart: always
+    restart: "no"
+    ports:
+      - "8000:8000"
     depends_on:
       - rabbitmq
     links:

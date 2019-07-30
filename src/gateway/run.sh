@@ -5,5 +5,4 @@ until nc -z ${RABBIT_HOST} ${RABBIT_PORT}; do
     sleep 1
 done
 
-echo "Starting service"
-nameko run --config config.yml service
+nameko run --config config.yaml service

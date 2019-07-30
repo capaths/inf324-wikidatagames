@@ -1,16 +1,16 @@
-FROM ubuntu:bionic
+FROM python:3
 
-RUN apt update && \
-    apt install -y python3-pip python3-dev
+RUN apt-get update && apt-get -y install netcat && apt-get clean
 
-COPY ./requirements.txt /usr/src/app/requirements.txt
+WORKDIR /app
 
-WORKDIR /usr/src/app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip3 install -r requirements.txt
+COPY config.yaml ./
+COPY run.sh ./
+COPY ticket/service.py ./
 
-COPY ./ticket /usr/src/app
+RUN chmod +x ./run.sh
 
-EXPOSE 5000
-
-CMD ["python3", "/usr/src/app/app.py"]
+CMD ["./run.sh"]
