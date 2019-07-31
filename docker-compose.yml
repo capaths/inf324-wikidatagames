@@ -98,3 +98,10 @@ services:
         RABBIT_HOST: "rabbitmq"
         RABBIT_PORT: "5672"
         RABBIT_MANAGEMENT_PORT: "15672"
+  
+  webapp:
+    container_name: games-webapp
+    build: ./src/webapp
+    restart: always
+    ports:
+      - "8080:80"
