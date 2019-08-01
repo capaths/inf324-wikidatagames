@@ -7,6 +7,17 @@ services:
         - "15673:15672"
     restart: always
 
+  playerdb:
+    container_name: games-playerdb
+    image: postgres
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: "player"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "postgres"
+    restart: always
+
   chat:
     container_name: games-chat
     build: ./src/chat
@@ -45,12 +56,17 @@ services:
       - rabbitmq
     links:
         - "rabbitmq:games-rabbitmq"
+        - "playerdb:games-playerdb"
     environment:
         RABBIT_PASSWORD: "guest"
         RABBIT_USER: "guest"
         RABBIT_HOST: "rabbitmq"
         RABBIT_PORT: "5672"
         RABBIT_MANAGEMENT_PORT: "15672"
+        DB_PASSWORD: "password"
+        DB_USER: "postgres"
+        DB_HOST: "postgres"
+        DB_NAME: "orders"
 
   access:
     container_name: games-access
@@ -98,10 +114,10 @@ services:
         RABBIT_HOST: "rabbitmq"
         RABBIT_PORT: "5672"
         RABBIT_MANAGEMENT_PORT: "15672"
-  
+
   webapp:
     container_name: games-webapp
     build: ./src/webapp
     restart: always
     ports:
-      - "8080:80"
+      - "8080:8080"

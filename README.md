@@ -15,5 +15,6 @@ Para correr uno de los servicios:
 
 ```
 cd src/<directorio-servicio>/
-python setup.py
+pip install -r requirements.txt
+nameko run --config config.yaml access
 ```

@@ -2,7 +2,7 @@
 
 from nameko.rpc import rpc
 from nameko.extensions import DependencyProvider
-
+from nameko.web.websocket import WebSocketHubProvider, rpc
 
 class ContainerIdentifier(DependencyProvider):
     def get_dependency(self, worker_ctx):

@@ -1,25 +1,32 @@
-# build
+# build frontend
 FROM node:lts-alpine as build-stage
 
 WORKDIR /app
 
-COPY webapp/package*.json ./
-COPY webapp/babel.config.js ./
-COPY webapp/postcss.config.js ./
-COPY webapp/tsconfig.json ./
-COPY webapp/tslint.json ./
+COPY webapp/frontend/package*.json ./
 
 RUN npm install
 
-COPY webapp/public/ ./public/
-COPY webapp/src/ ./src/
+COPY webapp/frontend/ ./
 
 RUN npm run build
 
 # production
-FROM nginx:stable-alpine as production-stage
+FROM ubuntu:latest as production-stage
 
-COPY --from=build-stage /app/dist /usr/share/nginx/html
+COPY --from=build-stage /dist /app/dist
 
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+RUN apt-get update -y
+RUN apt-get install -y python3-pip python3-dev build-essential
+
+WORKDIR /app
+
+COPY webapp/requirements.txt ./
+
+RUN pip3 install -r requirements.txt
+
+COPY webapp/backend ./
+COPY webapp/run.py ./
+
+ENTRYPOINT ["python3"]
+CMD ["run.py"]
