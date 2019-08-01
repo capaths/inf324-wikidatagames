@@ -33,10 +33,21 @@ class PlayerService:
         self.db.add(player)
         self.db.commit()
 
-
-
         #self.event_dispatcher('order_created', {
         #    'order': order,
         #})
 
-        return str(player)
+
+        return 200
+
+    @rpc
+    def get_player(self, usernm, passw):
+        player = self.db.query(Player).filter(Player.username=usernm).first()
+        if not player:
+            raise NotFound('Player {} no encontrado'.format(usernm))
+        if player.password != passw:
+            raise NotFound('Contraseña mal ingresada')
+
+        return PlayerSchema().dump(player).data
+
+
