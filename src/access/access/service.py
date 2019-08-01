@@ -1,5 +1,7 @@
 """Access Service"""
 
+import requests
+
 from nameko.rpc import rpc
 import jwt
 
@@ -26,5 +28,16 @@ class AccessService:
 
     @rpc
     def signup(self, username, password):
-        # TODO: Implement
-        return self.login(username, password)
+
+        data = {
+            "username": username,
+            "password": password,
+            "country": "Chile",
+            "elo": 1000
+        }
+        req = requests.post("http://player:8888/player", json=data)
+
+        if req.status_code == 200:
+            return self.login(username, password)
+        else:
+            return req.status_code, req.content

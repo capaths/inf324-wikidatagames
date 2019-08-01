@@ -8,6 +8,7 @@ from nameko.rpc import rpc
 from nameko_sqlalchemy import DatabaseSession
 from player.models import DeclarativeBase, Player
 from player.schemas import PlayerSchema
+from nameko.exceptions import BadRequest
 
 
 class PlayerService:
@@ -20,15 +21,15 @@ class PlayerService:
     def create_player(self, request):
         schema = PlayerSchema(strict=True)
         try:
-        	player_data = schema.loads(request.get_data(as_text=True)).data
+            player_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:
-        	raise BadRequest("Invalid json: {}".format(exc))
+            raise BadRequest("Invalid json: {}".format(exc))
 
         username = player_data['username']
         password = player_data['password']
         country = player_data['country']
         elo = player_data['elo']
-        player = Player(username=username,password=password,country=country,elo=elo)
+        player = Player(username=username, password=password, country=country, elo=elo)
         self.db.add(player)
         self.db.commit()
 
@@ -38,4 +39,4 @@ class PlayerService:
         #    'order': order,
         #})
 
-        return player
+        return str(player)

@@ -56,7 +56,7 @@ services:
       - rabbitmq
     links:
         - "rabbitmq:games-rabbitmq"
-        - "playerdb:games-playerdb"
+        - "playerdb:postgres"
     environment:
         RABBIT_PASSWORD: "guest"
         RABBIT_USER: "guest"
@@ -66,7 +66,7 @@ services:
         DB_PASSWORD: "password"
         DB_USER: "postgres"
         DB_HOST: "postgres"
-        DB_NAME: "orders"
+        DB_NAME: "player"
 
   access:
     container_name: games-access
@@ -76,6 +76,7 @@ services:
       - rabbitmq
     links:
         - "rabbitmq:games-rabbitmq"
+        - "player"
     environment:
         RABBIT_PASSWORD: "guest"
         RABBIT_USER: "guest"
