@@ -1,9 +1,14 @@
 """Access Service"""
 
 import requests
+import json
 
-from nameko.rpc import rpc
+from nameko.rpc import rpc, RpcProxy
+from nameko.exceptions import RemoteError
 import jwt
+
+import time
+import json
 
 from secret import JWT_SECRET
 
@@ -15,16 +20,24 @@ class NotAuthenticated(Exception):
 class AccessService:
     name = 'access'
 
+    player_rpc = RpcProxy("player")
+
+
     @rpc
     def login(self, username, password):
-        if password == "secret":
-            token = jwt.encode({
-                'username': username,
-                'permissions': [],
-                'roles': []
-            }, JWT_SECRET)
-            return token.decode()
-        raise NotAuthenticated()
+
+        try:
+            player = self.player_rpc.get_player(username, password)
+        except RemoteError:
+            raise NotAuthenticated()
+
+        token = jwt.encode({
+            'username': player["username"],
+            'permissions': [],
+            'roles': [],
+            "exp": time.time() + 60
+        }, JWT_SECRET, algorithm='HS256')
+        return json.dumps({"jwt": token.decode(), "user": player})
 
     @rpc
     def signup(self, username, password):
@@ -35,9 +48,10 @@ class AccessService:
             "country": "Chile",
             "elo": 1000
         }
+
         req = requests.post("http://player:8888/player", json=data)
 
         if req.status_code == 200:
-            return self.login(username, password)
+            return 200, self.login(username, password)
         else:
             return req.status_code, req.content

@@ -25,7 +25,7 @@ COPY webapp/requirements.txt ./
 
 RUN pip3 install -r requirements.txt
 
-COPY webapp/backend ./
+#COPY webapp/backend ./
 COPY webapp/run.py ./
 
 ENTRYPOINT ["python3"]
