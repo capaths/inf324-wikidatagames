@@ -2,9 +2,11 @@
 
 from nameko.rpc import RpcProxy
 from nameko.web.handlers import http
-from nameko.exceptions import BadRequest
+from nameko.exceptions import BadRequest, RemoteError
 
 from schemas import LoginSchema
+
+import json
 
 
 class GatewayService:
@@ -37,8 +39,12 @@ class GatewayService:
         username = login_data["username"]
         password = login_data["password"]
 
-        jwt = self.auth.login(username, password)
-        return jwt
+        try:
+            user_data = self.auth.login(username, password)
+        except RemoteError:
+            return 401, "Unauthorized"
+
+        return str(user_data)
 
     @http("POST", "/signup")
     def signup(self, request):
@@ -52,5 +58,9 @@ class GatewayService:
         username = login_data["username"]
         password = login_data["password"]
 
-        jwt = self.auth.signup(username, password)
-        return jwt
+        try:
+            user_data = self.auth.signup(username, password)
+        except RemoteError:
+            return 500, "Unknown error"
+
+        return str(user_data)
