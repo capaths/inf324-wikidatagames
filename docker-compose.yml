@@ -4,7 +4,7 @@ services:
     container_name: games-rabbitmq
     image: rabbitmq:3.7-management
     ports:
-        - "15673:15672"
+      - "15673:15672"
     restart: always
 
   playerdb:
@@ -25,13 +25,13 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
+      - "rabbitmq:games-rabbitmq"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
 
   match:
     container_name: games-match
@@ -40,13 +40,13 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
+      - "rabbitmq:games-rabbitmq"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
 
   player:
     container_name: games-player
@@ -55,18 +55,18 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
-        - "playerdb:postgres"
+      - "rabbitmq:games-rabbitmq"
+      - "playerdb:postgres"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
-        DB_PASSWORD: "password"
-        DB_USER: "postgres"
-        DB_HOST: "postgres"
-        DB_NAME: "player"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
+      DB_PASSWORD: "password"
+      DB_USER: "postgres"
+      DB_HOST: "postgres"
+      DB_NAME: "player"
 
   access:
     container_name: games-access
@@ -75,14 +75,14 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
-        - "player"
+      - "rabbitmq:games-rabbitmq"
+      - "player"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
 
   ticket:
     container_name: games-ticket
@@ -91,13 +91,13 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
+      - "rabbitmq:games-rabbitmq"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
 
   gateway:
     container_name: games-gateway
@@ -108,13 +108,13 @@ services:
     depends_on:
       - rabbitmq
     links:
-        - "rabbitmq:games-rabbitmq"
+      - "rabbitmq:games-rabbitmq"
     environment:
-        RABBIT_PASSWORD: "guest"
-        RABBIT_USER: "guest"
-        RABBIT_HOST: "rabbitmq"
-        RABBIT_PORT: "5672"
-        RABBIT_MANAGEMENT_PORT: "15672"
+      RABBIT_PASSWORD: "guest"
+      RABBIT_USER: "guest"
+      RABBIT_HOST: "rabbitmq"
+      RABBIT_PORT: "5672"
+      RABBIT_MANAGEMENT_PORT: "15672"
 
   webapp:
     container_name: games-webapp
@@ -124,3 +124,5 @@ services:
       - "8080:8080"
     links:
       - "gateway"
+    environment:
+      ENV: "prod"

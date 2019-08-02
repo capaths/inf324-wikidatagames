@@ -42,7 +42,7 @@ class GatewayService:
         try:
             user_data = self.auth.login(username, password)
         except RemoteError:
-            return 401, "Unauthorized"
+            return 400, "Invalid Credentials"
 
         return str(user_data)
 
