@@ -1,9 +1,10 @@
 from sqlalchemy import (
-    DECIMAL, Column, DateTime, ForeignKey, Integer,String
+    DECIMAL, Column, DateTime, ForeignKey, Integer,String, LargeBinary
 )
 
-import os
 
+import os
+from sqlalchemy import UniqueConstraint
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
@@ -28,10 +29,10 @@ class Player(DeclarativeBase):
     __tablename__ = "Player"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    username = Column(String(50))
+    username = Column(String(50), unique=True)
     password = Column(String(50))
     country = Column(String(50))
     elo = Column(Integer)
-
+    jwt = Column(LargeBinary(128))
 
 DeclarativeBase.metadata.create_all(engine)
