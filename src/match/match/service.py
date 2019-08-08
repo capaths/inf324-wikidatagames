@@ -14,9 +14,7 @@ from match.schemas import MatchSchema
 from nameko.exceptions import BadRequest
 
 
-
-
-#class ContainerIdentifier(DependencyProvider):
+# class ContainerIdentifier(DependencyProvider):
 #    def get_dependency(self, worker_ctx):
 #        return id(self.container)
 
@@ -24,7 +22,7 @@ class MatchService:
     name = "match"
     db = DatabaseSession(DeclarativeBase)
 
-    @http('POST','/match')
+    @http('POST', '/match')
     def create_match(self, request):
         schema = TicketSchema(strict=True)
         try:
@@ -37,38 +35,37 @@ class MatchService:
         scorePlayer1 = match_data['scorePlayer1']
         scorePlayer2 = match_data['scorePlayer2']
         result = match_data['result']
-        
 
-        match = Match(idPlayer1=idPlayer1,idPlayer2=idPlayer2,scorePlayer1=scorePlayer1,scorePlayer1=scorePlayer2,result=result)
+        match = Match(idPlayer1=idPlayer1, idPlayer2=idPlayer2, scorePlayer1=scorePlayer1, scorePlayer1=scorePlayer2,
+                      result=result)
         self.db.add(match)
         self.db.commit()
 
-        #self.event_dispatcher('order_created', {
+        # self.event_dispatcher('order_created', {
         #    'order': order,
-        #})
-
+        # })
 
         return 200
 
     @rpc
     def get_all_match(self):
-    	match = self.db.query(Match).order_by(Match.id)
-    	array = []
+        match = self.db.query(Match).order_by(Match.id)
+        array = []
         for instance in match:
-        	dicto = {}
-        	dicto['id'] = instance.id
-        	dicto['idPlayer1'] = instance.idPlayer1
-        	dicto['idPlayer2'] = instance.idPlayer2
-        	dicto['scorePlayer1'] = instance.scorePlayer1match
-        	dicto['scorePlayer2'] = instance.scorePlmatch        	dicto['result'] = instance.result
-        	array.append(dicto)
-		return json.dumps(array)
+            dicto = {}
+            dicto['id'] = instance.id
+            dicto['idPlayer1'] = instance.idPlayer1
+            dicto['idPlayer2'] = instance.idPlayer2
+            dicto['scorePlayer1'] = instance.scorePlayer1match
+            dicto['scorePlayer2'] = instance.scorePlmatch
+            dicto['result'] = instance.result
+            array.append(dicto)
+            return json.dumps(array)
 
-	@rpc
-	def get_match(self, id)
-		match = self.db.query(Match).filter(Match.id = id).first()
-		if not match:
-            raise NotFound('Match {} no encontrado'.format(id))
+        @rpc
+        def get_match(self, id)
+            match = self.db.query(Match).filter(Match.id = id).first()
+            if not match:
+
+        raise NotFound('Match {} no encontrado'.format(id))
         return MatchSchema().dump(match).data
-
-

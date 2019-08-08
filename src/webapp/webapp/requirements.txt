@@ -1,3 +1,4 @@
 flask
 flask-webpack-loader
 requests
+flask-socketio

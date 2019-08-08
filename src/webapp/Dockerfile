@@ -1,10 +1,10 @@
 # pre-production
-FROM ubuntu:latest as production-stage
+FROM python:3 as production-stage
 
-RUN apt-get update -y && apt-get install -y python3-pip python3-dev build-essential
+RUN apt-get update && apt-get clean
 
 COPY webapp/requirements.txt /app/
-RUN pip3 install -r /app/requirements.txt
+RUN pip install -r /app/requirements.txt
 
 # build frontend
 FROM node:lts-alpine as build-stage
@@ -32,5 +32,5 @@ COPY webapp/run.py ./
 ENV ENV=prod
 ENV PYTHONBUFFERED=0
 
-ENTRYPOINT ["python3"]
+ENTRYPOINT ["python"]
 CMD ["run.py"]
