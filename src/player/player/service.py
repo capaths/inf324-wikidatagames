@@ -1,6 +1,5 @@
 """Player Service"""
 
-
 import json
 from nameko.web.handlers import http
 from nameko.events import EventDispatcher
@@ -15,9 +14,10 @@ class PlayerService:
     name = "player"
 
     db = DatabaseSession(DeclarativeBase)
-    #event_dispatcher = EventDispatcher()
 
-    @http('POST','/player')
+    # event_dispatcher = EventDispatcher()
+
+    @http('POST', '/player')
     def create_player(self, request):
         schema = PlayerSchema(strict=True)
         try:
@@ -29,7 +29,12 @@ class PlayerService:
         password = player_data['password']
         country = player_data['country']
         elo = player_data['elo']
-        player = Player(username=username, password=password, country=country, elo=elo)
+
+        try:
+            player = Player(username=username, password=password, country=country, elo=elo, jwt=None)
+        except AssertionError:
+            return 400, "Player not valid"
+
         self.db.add(player)
         self.db.commit()
 

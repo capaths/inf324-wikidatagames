@@ -21,7 +21,7 @@ class AccessService:
     name = 'access'
 
     player_rpc = RpcProxy("player")
-
+    auth = RpcProxy("access")
 
     @rpc
     def login(self, username, password):
@@ -33,8 +33,6 @@ class AccessService:
 
         token = jwt.encode({
             'username': player["username"],
-            'permissions': [],
-            'roles': [],
             "exp": time.time() + 60
         }, JWT_SECRET, algorithm='HS256')
         return json.dumps({"jwt": token.decode(), "user": player})
@@ -52,6 +50,8 @@ class AccessService:
         req = requests.post("http://player:8888/player", json=data)
 
         if req.status_code == 200:
-            return 200, self.login(username, password)
+            return 200, self.auth.login(username, password)
+        elif req.status_code == 400:
+            return 400, "Invalid player field values"
         else:
             return req.status_code, req.content

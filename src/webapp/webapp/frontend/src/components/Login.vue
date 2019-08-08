@@ -1,5 +1,11 @@
 <template>
     <v-container>
+        <v-app-bar app>
+            <v-toolbar-title class="headline text-uppercase">
+                <span>Flag</span>
+                <span class="font-weight-light">uesser</span>
+            </v-toolbar-title>
+        </v-app-bar>
         <v-layout
                 text-center
                 wrap
@@ -33,8 +39,11 @@
                                     v-if="signupMode"
                             ></v-text-field>
                         </v-fade-transition>
-                        <v-btn class="mr-4" @click="attemptLogin">
-                            {{signupMode ? "Enviar" : "Ingresar"}}
+                        <v-btn class="mr-4" @click="attemptSignup" v-if="signupMode">
+                            {{"Enviar"}}
+                        </v-btn>
+                        <v-btn class="mr-4" @click="attemptLogin" v-else>
+                            {{"Ingresar"}}
                         </v-btn>
                     </v-form>
                 </v-card-text>
@@ -42,8 +51,8 @@
             <v-snackbar
                     v-model="snackbar"
                     color="error"
-                    timeout="6000"
-                    bottom="true"
+                    :timeout=6000
+                    :bottom=true
             >
                 {{error}}
             </v-snackbar>
@@ -62,6 +71,7 @@
             return {
                 username: '',
                 password: '',
+                country: '',
                 signupMode: false,
                 snackbar: false,
                 error: '',
@@ -71,22 +81,30 @@
             ...mapState('account', ['user']),
         },
         methods: {
-            ...mapActions('account', ['login']),
+            ...mapActions('account', ['login', 'signup']),
             attemptLogin() {
                 const credentials = {
                     username: this.username,
                     password: this.password,
                 };
                 this.login(credentials)
-                    .then(() => {
-                        console.log(this.user);
-                    })
                     .catch((e: any) => {
                         if (e.response.status === 400) {
-                            this.showError('Credenciales invalidas');
+                            this.showError('Usuario o contraseña incorrecta');
                         } else {
                             this.showError('Error desconocido');
                         }
+                    });
+            },
+            attemptSignup() {
+                const credentials = {
+                    username: this.username,
+                    password: this.password,
+                    country: this.country,
+                };
+                this.signup(credentials)
+                    .catch((e: any) => {
+                        this.showError('Error desconocido');
                     });
             },
             toggleSignUp() {
@@ -100,3 +118,4 @@
     })
     ;
 </script>
+

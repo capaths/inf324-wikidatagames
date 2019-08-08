@@ -16,7 +16,7 @@
             Menu,
         },
         computed: {
-            ...mapState("account", ["user"])
-        }
+            ...mapState('account', ['user']),
+        },
     });
 </script>

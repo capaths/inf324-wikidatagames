@@ -1,2 +1,3 @@
 flask
+flask-webpack-loader
 requests

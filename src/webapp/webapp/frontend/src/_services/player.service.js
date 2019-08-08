@@ -13,6 +13,20 @@ function login(username, password) {
     });
 }
 
+function signup(username, password, country) {
+    const payload = {
+        username: username,
+        password: password,
+        country: country,
+    };
+
+    return axios({
+        method: "post",
+        url: "/signup",
+        data: payload,
+    });
+}
+
 function logout() {
     const payload = {
         jwt: localStorage.getItem("t"),
@@ -28,4 +42,5 @@ function logout() {
 export const userService = {
     login,
     logout,
+    signup,
 };

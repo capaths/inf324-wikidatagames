@@ -26,8 +26,11 @@ COPY --from=build-stage /dist /app/dist
 
 WORKDIR /app
 
-COPY webapp/backend ./
+COPY webapp/app ./app
 COPY webapp/run.py ./
+
+ENV ENV=prod
+ENV PYTHONBUFFERED=1
 
 ENTRYPOINT ["python3"]
 CMD ["run.py"]

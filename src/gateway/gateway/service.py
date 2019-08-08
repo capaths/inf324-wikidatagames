@@ -63,4 +63,4 @@ class GatewayService:
         except RemoteError:
             return 500, "Unknown error"
 
-        return str(user_data)
+        return 200, str(user_data)

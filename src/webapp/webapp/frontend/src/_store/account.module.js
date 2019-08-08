@@ -4,7 +4,7 @@ import jwt_decode from "jwt-decode";
 
 const state = {
     jwt: localStorage.getItem("t"),
-    user: localStorage.getItem("user"),
+    user: JSON.parse(localStorage.getItem("user")),
 };
 
 const mutations = {
@@ -33,6 +33,14 @@ const actions = {
                 commit("updateToken", response.data.token);
                 commit("updateUser", response.data.user);
             });
+    },
+    signup({commit}, credentials) {
+        return userService.signup(credentials.username, credentials.password, credentials.country)
+            .then(response => {
+                console.log(response.data);
+                commit("updateToken", response.data.token);
+                commit("updateUser", response.data.user);
+            })
     },
     logout({commit}) {
         return userService.logout()
