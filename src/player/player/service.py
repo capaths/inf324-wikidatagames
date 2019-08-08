@@ -46,6 +46,6 @@ class PlayerService:
         if not player:
             raise ValueError('Player {} no encontrado'.format(usernm))
         if player.password != passw:
-            raise ValueError('Contrasenna mal ingresada')
+            raise ValueError(f'Contrasenna mal ingresada')
 
         return PlayerSchema().dump(player).data

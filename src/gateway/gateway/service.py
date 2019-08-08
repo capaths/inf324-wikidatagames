@@ -59,8 +59,8 @@ class GatewayService:
         password = login_data["password"]
 
         try:
-            user_data = self.auth.signup(username, password)
-        except RemoteError:
-            return 500, "Unknown error"
+            self.auth.signup(username, password)
+        except RemoteError as exc:
+            return 500, exc.value
 
-        return 200, str(user_data)
+        return 200, "Successful sign-up"

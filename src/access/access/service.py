@@ -49,9 +49,7 @@ class AccessService:
 
         req = requests.post("http://player:8888/player", json=data)
 
-        if req.status_code == 200:
-            return 200, self.auth.login(username, password)
-        elif req.status_code == 400:
-            return 400, "Invalid player field values"
-        else:
-            return req.status_code, req.content
+        if req.status_code == 400:
+            raise ValueError("Invalid player field values")
+        elif req.status_code != 200:
+            raise RemoteError(req.content)

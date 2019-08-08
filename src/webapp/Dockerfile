@@ -30,7 +30,7 @@ COPY webapp/app ./app
 COPY webapp/run.py ./
 
 ENV ENV=prod
-ENV PYTHONBUFFERED=1
+ENV PYTHONBUFFERED=0
 
 ENTRYPOINT ["python3"]
 CMD ["run.py"]

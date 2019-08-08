@@ -55,17 +55,10 @@ def signup():
             "password": password,
             "country": country
         })
-    else:
-        return {
-            "jwt": "test-jwt",
-            "user": {
-                "username": "testUser",
-                "country": "Chile"
-            }
-        }
 
-    print(req.content.decode())
-    return req.content.decode(), req.status_code
+        if req.status_code != 200:
+            return req.content.decode(), req.status_code
+    return login()
 
 
 @app.route('/login', methods=['POST'])
