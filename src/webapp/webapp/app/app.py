@@ -1,11 +1,12 @@
 import os
 
 from flask import Flask
-
 from flask_socketio import SocketIO
-
 from flask_webpack_loader import WebpackLoader
+
+
 import re
+from .router import route_app
 
 PROD = os.environ.get("ENV") == "prod"
 
@@ -17,6 +18,8 @@ class SocketApp:
         static_folder = "../dist/static" if for_production else "static"
 
         self.app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+        route_app(self.app, for_production)
+
         self.socketio = SocketIO(self.app)
 
         if not for_production:
@@ -30,8 +33,8 @@ class SocketApp:
                 'CACHE': False
             }
 
-            webpack_loader = WebpackLoader(app)
+            webpack_loader = WebpackLoader(self.app)
             webpack_loader.config = WEBPACK_LOADER
 
     def run(self, host='0.0.0.0', port=8080):
-        self.socketio.run(self.app, host=host, port=port)
+        self.socketio.run(self.app, host=host, port=port, debug=True)
