@@ -7,7 +7,7 @@ module.exports = {
     chainWebpack: config => {
 
         config.optimization
-            .splitChunks(true);
+            .splitChunks(false);
 
         config
             .plugin('BundleTracker')
