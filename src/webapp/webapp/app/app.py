@@ -7,6 +7,7 @@ from flask_webpack_loader import WebpackLoader
 
 import re
 from .router import route_app
+from .socket import prepare_sockets
 
 PROD = os.environ.get("ENV") == "prod"
 
@@ -18,9 +19,10 @@ class SocketApp:
         static_folder = "../dist/static" if for_production else "static"
 
         self.app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
-        route_app(self.app, for_production)
+        route_app(self.app, for_production=for_production)
 
         self.socketio = SocketIO(self.app)
+        prepare_sockets(self.socketio)
 
         if not for_production:
             WEBPACK_LOADER = {

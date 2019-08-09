@@ -37,10 +37,9 @@ const actions = {
     signup({commit}, credentials) {
         return userService.signup(credentials.username, credentials.password, credentials.country)
             .then(response => {
-                console.log(response.data);
                 commit("updateToken", response.data.token);
                 commit("updateUser", response.data.user);
-            })
+            });
     },
     logout({commit}) {
         return userService.logout()

@@ -4,8 +4,11 @@
             <v-flex d-flex md2 xs4 pa-0>
                 <Profile></Profile>
             </v-flex>
-            <v-flex d-flex md10 xs8 pa-0>
+            <v-flex d-flex md6 xs6 pa-0>
                 <PlayerList></PlayerList>
+            </v-flex>
+            <v-flex d-flex md4 xs2 pa-0>
+                <Chat></Chat>
             </v-flex>
         </v-layout>
     </v-container>
@@ -14,10 +17,12 @@
 <script>
     import Profile from './menu/Profile';
     import PlayerList from './menu/PlayerList';
+    import Chat from './menu/Chat';
 
     export default {
         name: 'Menu',
         components: {
+            Chat,
             Profile,
             PlayerList,
         },

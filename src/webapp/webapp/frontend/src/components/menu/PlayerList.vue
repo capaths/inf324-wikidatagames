@@ -1,6 +1,5 @@
 <template>
-    <v-card width="100%">
-        <v-list width="100%">
+    <v-card flat width="100%">
             <PlayerListItem
                     v-for="user in users"
                     :username="user.username"
@@ -9,7 +8,6 @@
                     :elo="user.elo"
                     :key="user.username"
             ></PlayerListItem>
-        </v-list>
     </v-card>
 </template>
 

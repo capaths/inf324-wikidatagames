@@ -1,6 +1,8 @@
 import requests
 from flask import request, render_template
 
+from sys import stdout
+
 
 def route_app(app, for_production: bool = False):
     @app.route('/')
@@ -23,6 +25,7 @@ def route_app(app, for_production: bool = False):
 
             if req.status_code != 200:
                 return req.content.decode(), req.status_code
+            app.logger.info('new user: %s', username)
         return login()
 
     @app.route('/login', methods=['POST'])

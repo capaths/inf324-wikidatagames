@@ -3,9 +3,6 @@ FROM python:3 as production-stage
 
 RUN apt-get update && apt-get clean
 
-COPY webapp/requirements.txt /app/
-RUN pip install -r /app/requirements.txt
-
 # build frontend
 FROM node:lts-alpine as build-stage
 
@@ -21,6 +18,9 @@ RUN npm run build
 
 # production
 FROM production-stage
+
+COPY webapp/requirements.txt /app/
+RUN pip install -r /app/requirements.txt
 
 COPY --from=build-stage /dist /app/dist
 
