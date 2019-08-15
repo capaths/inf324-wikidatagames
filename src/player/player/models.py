@@ -51,5 +51,4 @@ class Player(DeclarativeBase):
         return username
 
 
-DeclarativeBase.metadata.drop_all(engine)
 DeclarativeBase.metadata.create_all(engine)

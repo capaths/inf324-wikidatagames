@@ -1,12 +1,27 @@
 """ Gateway """
+from __future__ import absolute_import
 
-from nameko.rpc import RpcProxy
+from nameko.rpc import RpcProxy, rpc
+from nameko.timer import timer
 from nameko.web.handlers import http
 from nameko.exceptions import BadRequest, RemoteError
+from nameko.extensions import DependencyProvider
+
+from nameko.web.websocket import WebSocketHubProvider
+from nameko.web.websocket import rpc as srpc
 
 from schemas import LoginSchema
 
 import json
+
+class Config(DependencyProvider):
+    def get_dependency(self, worker_ctx):
+        return self.container.config
+
+
+class ContainerIdentifier(DependencyProvider):
+    def get_dependency(self, worker_ctx):
+        return id(self.container)
 
 
 class GatewayService:
@@ -15,6 +30,11 @@ class GatewayService:
     """
 
     name = "gateway"
+
+    hub = WebSocketHubProvider()
+
+    config = Config()
+    container_id = ContainerIdentifier()
 
     auth = RpcProxy('access')
 
@@ -64,3 +84,19 @@ class GatewayService:
             return 500, exc.value
 
         return 200, "Successful sign-up"
+
+    @srpc
+    def subscribe_chat(self, socket_id):
+        self.hub.subscribe(socket_id, 'chat')
+        return 'subscribed to chat'
+
+    @srpc
+    def receive_message(self, socket_id, sender, content):
+        self.chat_rpc.receive_message(sender, content)
+
+    @rpc
+    def broadcast_message(self, sender, content, room=None):
+        self.hub.broadcast('chat', 'new_message', {
+            "sender": sender,
+            "content": content
+        })

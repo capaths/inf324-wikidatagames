@@ -17,6 +17,8 @@ services:
       POSTGRES_PASSWORD: "password"
       POSTGRES_USER: "postgres"
     restart: always
+    volumes:
+      - player-volume:/var/lib/postgresql/data
 
   chat:
     container_name: games-chat
@@ -127,3 +129,6 @@ services:
       - "gateway"
     environment:
       ENV: "prod"
+
+volumes:
+  player-volume:

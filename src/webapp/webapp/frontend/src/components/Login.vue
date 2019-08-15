@@ -20,15 +20,17 @@
                                 label="Nombre de usuario"
                                 v-model="username"
                                 required
+                                @keydown.enter.prevent="attemptLogin"
                         ></v-text-field>
                         <v-text-field
                                 type="password"
                                 label="Contraseña"
                                 v-model="password"
+                                @keydown.enter.prevent="attemptLogin"
                         ></v-text-field>
-                        <v-flex>
+                        <v-flex pa-1>
                             <a @click="toggleSignUp">
-                                {{signupMode ? "¿Ya está registrado?": "Registrarse"}}
+                                {{signupMode?"¿Ya está registrado?":"Registrarse"}}
                             </a>
                         </v-flex>
                         <v-fade-transition>
@@ -39,11 +41,11 @@
                                     v-if="signupMode"
                             ></v-text-field>
                         </v-fade-transition>
-                        <v-btn class="mr-4" @click="attemptSignup" v-if="signupMode">
-                            {{"Enviar"}}
+                        <v-btn class="mr-4" @click="attemptSignup" :disabled="waiting" v-if="signupMode">
+                            Enviar
                         </v-btn>
-                        <v-btn class="mr-4" @click="attemptLogin" v-else>
-                            {{"Ingresar"}}
+                        <v-btn class="mr-4" @click="attemptLogin" :disabled="waiting" v-else>
+                            Ingresar
                         </v-btn>
                     </v-form>
                 </v-card-text>
@@ -75,6 +77,7 @@
                 signupMode: false,
                 snackbar: false,
                 error: '',
+                waiting: false,
             };
         },
         computed: {
@@ -87,8 +90,13 @@
                     username: this.username,
                     password: this.password,
                 };
+                this.waiting = true;
                 this.login(credentials)
+                    .then(() => {
+                        this.waiting = false;
+                    })
                     .catch((e: any) => {
+                        this.waiting = false;
                         if (e.response.status === 400) {
                             this.showError('Usuario o contraseña incorrecta');
                         } else {
@@ -102,8 +110,13 @@
                     password: this.password,
                     country: this.country,
                 };
+                this.waiting = true;
                 this.signup(credentials)
+                    .then(() => {
+                        this.waiting = false;
+                    })
                     .catch((e: any) => {
+                        this.waiting = false;
                         this.showError('Error desconocido');
                     });
             },

@@ -3,3 +3,4 @@ flask-webpack-loader
 requests
 flask-socketio
 eventlet
+websocket-client

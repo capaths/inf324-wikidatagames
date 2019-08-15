@@ -13,6 +13,7 @@
     "jwt-decode": "^2.2.0",
     "vue": "^2.6.10",
     "vue-class-component": "^7.0.2",
+    "vue-native-websocket": "^2.0.13",
     "vue-property-decorator": "^8.1.0",
     "vue-router": "^3.0.3",
     "vue-socket.io": "^3.0.7",

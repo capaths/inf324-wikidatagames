@@ -4,11 +4,8 @@ module.exports = {
     publicPath: "http://127.0.0.1:8080",
     outputDir: "../dist",
     assetsDir: "static",
+
     chainWebpack: config => {
-
-        config.optimization
-            .splitChunks(false);
-
         config
             .plugin('BundleTracker')
             .use(BundleTracker, [{filename: '../frontend/webpack-stats.json'}]);
@@ -24,5 +21,5 @@ module.exports = {
             .watchOptions({poll: 1000})
             .https(false)
             .headers({"Access-Control-Allow-Origin": ["\\*"]});
-    }
+    },
 };

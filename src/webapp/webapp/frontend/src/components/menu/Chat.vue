@@ -1,6 +1,6 @@
 <template>
     <v-layout align-end>
-        <v-list dense width="100%">
+        <v-list dense width="100%" max-height="100%" id="chatList">
             <ChatMessage
                     v-for="(value, name, index) in msgs"
                     :sender="value.sender"
@@ -36,25 +36,50 @@
         components: {
             ChatMessage,
         },
+        mounted() {
+            this.$options.sockets.onmessage = (message) => {
+                console.log(message.data);
+                if (message.data.type === 'event')
+                {
+                    if (message.data.event === "new_message")
+                    {
+                        this.msgs.push(message.data.data);
+                    }
+                }
+            };
+            this.$options.sockets.onopen = () => {
+                this.$socket.sendObj({
+                    method: 'subscribe_chat',
+                    data: {},
+                });
+            }
+        },
         computed: {
             ...mapState('account', ['user']),
         },
         sockets: {
-            connect() {
-                // console.log('socket connected');
-            },
             receiveMessage(data) {
                 this.msgs.push(data);
             },
         },
         methods: {
             sendMessage() {
-                this.$socket.emit('sendChatMessage', {
-                    sender: this.user.username,
-                    content: this.message,
+                if (this.message === '') return;
+                this.$socket.sendObj({
+                    method: 'receive_message',
+                    data: {
+                        sender: this.user.username,
+                        content: this.message,
+                    },
                 });
                 this.message = '';
             },
         },
     };
 </script>
+
+<style scoped>
+    #chatList {
+        overflow-y: scroll;
+    }
+</style>

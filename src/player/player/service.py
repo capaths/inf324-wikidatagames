@@ -1,5 +1,4 @@
 """Player Service"""
-
 import json
 from nameko.web.handlers import http
 from nameko.events import EventDispatcher
