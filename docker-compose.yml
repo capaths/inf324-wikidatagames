@@ -20,6 +20,32 @@ services:
     volumes:
       - player-volume:/var/lib/postgresql/data
 
+  matchdb:
+    container_name: games-matchdb
+    image: postgres
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_DB: "match"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "postgres"
+    restart: always
+    volumes:
+      - match-volume:/var/lib/postgresql/data
+
+  ticketdb:
+    container_name: games-ticketdb
+    image: postgres
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_DB: "ticket"
+      POSTGRES_PASSWORD: "password"
+      POSTGRES_USER: "postgres"
+    restart: always
+    volumes:
+      - ticket-volume:/var/lib/postgresql/data
+
   chat:
     container_name: games-chat
     build: ./src/chat
@@ -43,12 +69,18 @@ services:
       - rabbitmq
     links:
       - "rabbitmq:games-rabbitmq"
+      - "matchdb:postgres"
     environment:
       RABBIT_PASSWORD: "guest"
       RABBIT_USER: "guest"
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      DB_PASSWORD: "password"
+      DB_USER: "postgres"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_NAME: "match"
 
   player:
     container_name: games-player
@@ -95,12 +127,18 @@ services:
       - rabbitmq
     links:
       - "rabbitmq:games-rabbitmq"
+      - "ticketdb:postgres"
     environment:
       RABBIT_PASSWORD: "guest"
       RABBIT_USER: "guest"
       RABBIT_HOST: "rabbitmq"
       RABBIT_PORT: "5672"
       RABBIT_MANAGEMENT_PORT: "15672"
+      DB_PASSWORD: "password"
+      DB_USER: "postgres"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_NAME: "ticket"
 
   gateway:
     container_name: games-gateway
@@ -132,3 +170,5 @@ services:
 
 volumes:
   player-volume:
+  match-volume:
+  ticket-volume:

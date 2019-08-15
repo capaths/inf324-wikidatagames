@@ -10,7 +10,7 @@ from nameko.extensions import DependencyProvider
 from nameko.web.websocket import WebSocketHubProvider
 from nameko.web.websocket import rpc as srpc
 
-from schemas import LoginSchema
+from gateway.schemas import LoginSchema
 
 import json
 
@@ -43,9 +43,9 @@ class GatewayService:
     match_rpc = RpcProxy('match')
     player_rpc = RpcProxy('player')
 
-    @http("GET", "/player")
-    def get_player(self, request):
-        return self.player_rpc.get_player("user")
+    @http("GET", "/ticket")
+    def get_ticket(self, request):
+        return self.ticket_rpc.get_ticket("user")
 
     @http("POST", "/login")
     def login(self, request):

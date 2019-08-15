@@ -9,8 +9,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY config.yaml ./
 COPY run.sh ./
-COPY ticket/service.py ./
+
+COPY ticket/ ./ticket/
 
 RUN chmod +x ./run.sh
+EXPOSE 8080
 
 CMD ["./run.sh"]

@@ -1,18 +1,20 @@
-"""Player Service"""
+"""Ticket Service"""
+from __future__ import absolute_import
+
 import json
 from nameko.web.handlers import http
-from nameko.events import EventDispatcher
 from nameko.rpc import rpc
 from nameko_sqlalchemy import DatabaseSession
-from ticket.models import DeclarativeBase, Player
+from ticket.models import DeclarativeBase, Ticket
 from ticket.schemas import TicketSchema
 from nameko.exceptions import BadRequest
+
 
 class TicketService:
     name = "ticket"
     db = DatabaseSession(DeclarativeBase)
 
-    @http('POST','/ticket')
+    @http('POST', '/ticket')
     def create_ticket(self, request):
         schema = TicketSchema(strict=True)
         try:
@@ -21,36 +23,29 @@ class TicketService:
             raise BadRequest("Invalid json: {}".format(exc))
 
         title = ticket_data['title']
-        description = ticket_data['description']
+        content = ticket_data['content']
+        ticket = Ticket(title=title, content=content)
 
-        ticket = Ticket(title=title,description=description)
         self.db.add(ticket)
         self.db.commit()
-
-        #self.event_dispatcher('order_created', {
-        #    'order': order,
-        #})
-
 
         return 200
 
     @rpc
     def get_all_tickets(self):
-    	ticket = self.db.query(Ticket).order_by(Ticket.id)
-    	array = []
+        ticket = self.db.query(Ticket).order_by(Ticket.id)
+        tickets = []
         for instance in ticket:
-        	dicto = {}
-        	dicto['id'] = instance.id
-        	dicto['title'] = instance.title
-        	dicto['description'] = instance.description
-        	array.append(dicto)
-		return json.dumps(array)
+            data = dict()
+            data['id'] = instance.id
+            data['title'] = instance.title
+            data['description'] = instance.description
+            tickets.append(data)
+        return json.dumps(tickets)
 
-	@rpc
-	def get_ticket(self, id)
-		ticket = self.db.query(Ticket).filter(Ticket.id = id).first()
-		if not ticket:
-            raise NotFound('Ticket {} no encontrado'.format(id))
+    @rpc
+    def get_ticket(self, ticket_id):
+        ticket = self.db.query(Ticket).filter(Ticket.id == ticket_id).first()
+        if not ticket:
+            raise ValueError(f'Ticket with id {ticket_id} not found')
         return TicketSchema().dump(ticket).data
-
-

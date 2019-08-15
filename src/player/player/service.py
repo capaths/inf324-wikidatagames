@@ -40,7 +40,7 @@ class PlayerService:
         return 200, "Ok"
 
     @rpc
-    def get_player(self, usernm, passw):
+    def get_player_by_credentials(self, usernm, passw):
         player = self.db.query(Player).filter(Player.username == usernm).first()
         if not player:
             raise ValueError('Player {} no encontrado'.format(usernm))
