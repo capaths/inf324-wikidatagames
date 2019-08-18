@@ -4,7 +4,7 @@ from nameko.rpc import rpc
 from nameko.extensions import DependencyProvider
 from nameko.web.websocket import WebSocketHubProvider, rpc
 
-import json
+import json, random
 from nameko.web.handlers import http
 from nameko.events import EventDispatcher
 from nameko.rpc import rpc
