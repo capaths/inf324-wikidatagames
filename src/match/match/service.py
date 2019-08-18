@@ -4,7 +4,7 @@ from nameko.rpc import rpc
 from nameko.extensions import DependencyProvider
 from nameko.web.websocket import WebSocketHubProvider, rpc
 
-import json
+import json, random
 from nameko.web.handlers import http
 from nameko.events import EventDispatcher
 from nameko.rpc import rpc
@@ -24,7 +24,7 @@ class MatchService:
 
     @http('POST', '/match')
     def create_match(self, request):
-        schema = TicketSchema(strict=True)
+        schema = MatchSchema(strict=True)
         try:
             match_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:
@@ -47,6 +47,20 @@ class MatchService:
 
         return 200
 
+    @http('GET','/flag')
+    def get_flag(self, request):
+        file1 = open('images.txt', 'r')
+        sample_list = random.sample(range(0, 70), 20)
+        name, url = [], []
+        for i in file1:
+            splitter = i.split(';')
+            if int(splitter[0]) in sample_list:
+                name.append(splitter[2])
+                url.append(splitter[3])
+        data = [{"name": t, "image_url": s} for t, s in zip(name, url)]
+
+        return json.dumps(data)
+
     @rpc
     def get_all_match(self):
         match = self.db.query(Match).order_by(Match.id)
@@ -62,10 +76,9 @@ class MatchService:
             array.append(dicto)
             return json.dumps(array)
 
-        @rpc
-        def get_match(self, id)
-            match = self.db.query(Match).filter(Match.id = id).first()
-            if not match:
-
-        raise NotFound('Match {} no encontrado'.format(id))
+    @rpc
+    def get_match(self, id):
+        match = self.db.query(Match).filter(Match.id = id).first()
+        if not match:
+            raise NotFound('Match {} no encontrado'.format(id))
         return MatchSchema().dump(match).data
