@@ -47,6 +47,21 @@ class MatchService:
 
         return 200
 
+    @http('GET','/flag')
+    def get_flag(self, request):
+        file1 = open('images.txt', 'r')
+        sample_list = random.sample(range(0, 70), 20)
+
+        name, url = [], []
+        for i in file1:
+            splitter = i.split(';')
+            if int(splitter[0]) in sample_list:
+                name.append(splitter[2])
+                url.append(splitter[3])
+
+        data = [{"name": t, "image_url": s} for t, s in zip(name, url)]
+        return json.dumps(data)
+
     @rpc
     def get_all_match(self):
         match = self.db.query(Match).order_by(Match.id)
@@ -66,6 +81,5 @@ class MatchService:
         def get_match(self, id)
             match = self.db.query(Match).filter(Match.id = id).first()
             if not match:
-
-        raise NotFound('Match {} no encontrado'.format(id))
+            raise NotFound('Match {} no encontrado'.format(id))
         return MatchSchema().dump(match).data
