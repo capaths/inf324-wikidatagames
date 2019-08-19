@@ -3,10 +3,13 @@ from sqlalchemy import (
 )
 
 import os
+import datetime
+
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 
-import datetime
+from nameko.extensions import DependencyProvider
+from sqlalchemy.orm import sessionmaker, Session
 
 
 def get_url():
@@ -22,7 +25,6 @@ def get_url():
     )
 
 
-engine = create_engine(get_url())
 DeclarativeBase = declarative_base()
 
 
@@ -35,4 +37,21 @@ class Ticket(DeclarativeBase):
     date_sent = Column(DateTime, default=datetime.datetime.utcnow)
 
 
-DeclarativeBase.metadata.create_all(engine)
+class TicketRepository:
+    db: Session = None
+
+    def __init__(self, db):
+        self.db = db
+
+
+class TicketDatabase(DependencyProvider):
+    db = None
+
+    def setup(self):
+        engine = create_engine(get_url())
+        DeclarativeBase.metadata.create_all(engine)
+        session = sessionmaker(bind=engine)
+        self.db = session()
+
+    def get_dependency(self, worker_ctx):
+        return TicketRepository(self.db)

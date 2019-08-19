@@ -2,50 +2,59 @@
 from __future__ import absolute_import
 
 import json
-from nameko.web.handlers import http
 from nameko.rpc import rpc
-from nameko_sqlalchemy import DatabaseSession
-from ticket.models import DeclarativeBase, Ticket
+from nameko.web.handlers import http
+from ticket.models import TicketDatabase, Ticket
 from ticket.schemas import TicketSchema
-from nameko.exceptions import BadRequest
 
 
 class TicketService:
     name = "ticket"
-    db = DatabaseSession(DeclarativeBase)
+    rep = TicketDatabase()
 
-    @http('POST', '/ticket')
-    def create_ticket(self, request):
-        schema = TicketSchema(strict=True)
-        try:
-            ticket_data = schema.loads(request.get_data(as_text=True)).data
-        except ValueError as exc:
-            raise BadRequest("Invalid json: {}".format(exc))
-
-        title = ticket_data['title']
-        content = ticket_data['content']
+    def create_ticket(self, title, content):
         ticket = Ticket(title=title, content=content)
 
-        self.db.add(ticket)
-        self.db.commit()
+        try:
+            self.rep.db.add(ticket)
+            self.rep.db.commit()
+        except:
+            self.rep.db.rollback()
+            return False
 
-        return 200
+        return True
 
-    @rpc
+    def get_ticket(self, ticket_id):
+        ticket = Ticket(id=ticket_id)
+
+        self.rep.db.add(ticket)
+        self.rep.db.commit()
+
     def get_all_tickets(self):
-        ticket = self.db.query(Ticket).order_by(Ticket.id)
+        ticket = self.rep.db.query(Ticket).order_by(Ticket.id)
         tickets = []
         for instance in ticket:
             data = dict()
             data['id'] = instance.id
             data['title'] = instance.title
-            data['description'] = instance.description
+            data['content'] = instance.content
             tickets.append(data)
-        return json.dumps(tickets)
+        return tickets
 
-    @rpc
-    def get_ticket(self, ticket_id):
-        ticket = self.db.query(Ticket).filter(Ticket.id == ticket_id).first()
-        if not ticket:
-            raise ValueError(f'Ticket with id {ticket_id} not found')
-        return TicketSchema().dump(ticket).data
+    @http('POST', '/ticket')
+    def post_ticket(self, request):
+        schema = TicketSchema(strict=True)
+        try:
+            ticket_data = schema.loads(request.get_data(as_text=True)).data
+        except ValueError:
+            return 400
+
+        title = ticket_data['title']
+        content = ticket_data['content']
+
+        self.create_ticket(title, content)
+        return 200
+
+    @http('GET', '/ticket')
+    def get_tickets(self, request):
+        return json.dumps(self.get_all_tickets())
