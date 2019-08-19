@@ -3,8 +3,13 @@ services:
   - docker
 
 script:
-  - docker-compose build
+  - pytest src/access/test/test.py
+  - pytest src/chat/test/test.py
+  - pytest src/match/test/test.py
+  - pytest src/player/test/test.py
+  - pytest src/ticket/test/test.py
 
 after_success:
-  - docker login --username $DOCKER_USERNAME --password $DOCKER_PASSWORD
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker-compose build
+  - docker-compose push access chat gateway match player ticket
