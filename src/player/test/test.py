@@ -54,9 +54,13 @@ def test_create(session):
 
 def test_get_player(session):
     service = worker_factory(PlayerService, rep=session)
+
     assert service.get_player(TEST_USERNAME, TEST_PASSWORD) is not None
+    assert service.get_player(TEST_USERNAME, "") is None
 
 
 def test_get_player_by_username(session):
     service = worker_factory(PlayerService, rep=session)
+
     assert service.get_player_by_username(TEST_USERNAME) is not None
+    assert service.get_player_by_username("") is not None
