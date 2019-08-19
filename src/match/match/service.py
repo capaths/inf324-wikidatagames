@@ -9,6 +9,7 @@ from nameko.exceptions import BadRequest
 
 import os
 
+
 class MatchService:
     name = "match"
     rep = MatchDatabase()
@@ -22,11 +23,7 @@ class MatchService:
         else:
             result = 0
 
-        try:
-            self.rep.create_match(username1, username2, score1, score2, result)
-        except Exception:
-            return False
-        return True
+        return self.rep.create_match(username1, username2, score1, score2, result)
 
     @http('POST', '/match')
     def post_match(self, request):
@@ -42,8 +39,8 @@ class MatchService:
         score2 = match_data['scorePlayer2']
 
         if self.create_match(username1, username2, score1, score2):
-            return 200
-        return 500
+            return 200, ""
+        return 500, ""
 
     @rpc
     def get_flags(self, n_flags=20):
@@ -62,7 +59,7 @@ class MatchService:
         return data
 
     @rpc
-    def get_all_match(self):
+    def get_all_matches(self):
         matches = self.rep.get_all_matches()
         array = []
         for instance in matches:
@@ -74,7 +71,7 @@ class MatchService:
             dicto['score2'] = instance.scoreP2
             dicto['result'] = instance.result
             array.append(dicto)
-            return json.dumps(array)
+        return array
 
     @rpc
     def get_player_matches(self, username):

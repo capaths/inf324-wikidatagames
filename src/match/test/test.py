@@ -46,6 +46,8 @@ def test_match(session):
     assert service.create_match(USER("H"), USER("I"), SCORE_HIGH, SCORE_HIGH)
     assert service.get_player_matches(USER("H"))[0].result == 0
 
+    assert len(service.get_all_matches()) == 5
+
 
 def test_flags():
     service = worker_factory(MatchService, rep=session)

@@ -21,7 +21,7 @@ def get_url():
         db_pass=os.getenv("DB_PASSWORD", "password"),
         db_host=os.getenv("DB_HOST", "localhost"),
         db_port=os.getenv("DB_PORT", "5432"),
-        db_name=os.getenv("DB_NAME", "orders"),
+        db_name=os.getenv("DB_NAME", "match"),
     )
 
 
