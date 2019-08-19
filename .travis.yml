@@ -22,4 +22,4 @@ script:
 after_success:
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   - docker-compose build
-  - docker-compose push access chat gateway match player ticket
+  - docker-compose push access chat gateway match player ticket webapp
