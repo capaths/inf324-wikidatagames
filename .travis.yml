@@ -5,7 +5,7 @@ services:
 language: python
 
 script:
-  - pip install pytest
+  - pip install pytest==4.6.5
   - pip install -r src/access/requirements.txt
   - pytest src/access/test/test.py
   - pip install -r src/chat/requirements.txt
