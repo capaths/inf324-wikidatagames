@@ -3,10 +3,16 @@ services:
   - docker
 
 script:
+  - pip install pytest
+  - pip install -r src/access/requirements.txt
   - pytest src/access/test/test.py
+  - pip install -r src/chat/requirements.txt
   - pytest src/chat/test/test.py
+  - pip install -r src/match/requirements.txt
   - pytest src/match/test/test.py
+  - pip install -r src/player/requirements.txt
   - pytest src/player/test/test.py
+  - pip install -r src/ticket/requirements.txt
   - pytest src/ticket/test/test.py
 
 after_success:
