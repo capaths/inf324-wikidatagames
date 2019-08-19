@@ -1,27 +1,26 @@
-""" Service unit testing best practice, with an alternative dependency.
-"""
-
-import pytest, json
-from sqlalchemy import Column, Integer, String, create_engine
-from sqlalchemy.ext.declarative import declarative_base
+import pytest
+from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-from nameko.rpc import rpc
 from nameko.testing.services import worker_factory
-from player.service import *
-from player.models import *
+from player.service import PlayerService
+from player.models import DeclarativeBase, Player, PlayerRepository
+
+TEST_USERNAME = "TestUser"
+TEST_USERNAME2 = "TestUser2"
+TEST_PASSWORD = "secret"
+
 
 @pytest.fixture
 def session():
-    """ Create a test database and session
-    """
-    #Base.metadata.create_all(engine)
-
     engine = create_engine('sqlite:///:memory:')
     DeclarativeBase.metadata.create_all(engine)
 
     session_cls = sessionmaker(bind=engine)
-    return PlayerRepository(session_cls())
+    rep = PlayerRepository(session_cls())
+
+    test_player = Player(username=TEST_USERNAME, password=TEST_PASSWORD, country="Chile")
+    rep.db.add(test_player)
 
 """
 def test_create(session):
@@ -55,12 +54,9 @@ def test_create(session):
 
 def test_get_player(session):
     service = worker_factory(PlayerService, rep=session)
-    username = "testest"
-    password = "testest"
-    assert service.get_player(username, password)
+    assert service.get_player(TEST_USERNAME, TEST_PASSWORD) is not None
 
 
 def test_get_player_by_username(session):
     service = worker_factory(PlayerService, rep=session)
-    username = "testest"
-    assert service.get_player_by_username(username) is None
+    assert service.get_player_by_username(TEST_USERNAME) is not None

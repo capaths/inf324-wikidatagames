@@ -11,7 +11,7 @@ from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
 from nameko.extensions import DependencyProvider
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 
 def get_url():
@@ -54,7 +54,7 @@ class Player(DeclarativeBase):
 
 
 class PlayerRepository:
-    db = None
+    db: Session = None
 
     def __init__(self, db):
         self.db = db
