@@ -48,6 +48,7 @@ services:
 
   chat:
     container_name: games-chat
+    image: capaths/gameschat
     build: ./src/chat
     restart: always
     depends_on:
@@ -63,6 +64,7 @@ services:
 
   match:
     container_name: games-match
+    image: capaths/gamesmatch
     build: ./src/match
     restart: always
     depends_on:
@@ -84,6 +86,7 @@ services:
 
   player:
     container_name: games-player
+    image: capaths/gamesplayer
     build: ./src/player
     restart: always
     depends_on:
@@ -105,13 +108,14 @@ services:
 
   access:
     container_name: games-access
+    image: capaths/gamesaccess
     build: ./src/access
     restart: always
     depends_on:
       - rabbitmq
     links:
       - "rabbitmq:games-rabbitmq"
-      - "player"
+      - player
     environment:
       RABBIT_PASSWORD: "guest"
       RABBIT_USER: "guest"
@@ -121,6 +125,7 @@ services:
 
   ticket:
     container_name: games-ticket
+    image: capaths/gamesticket
     build: ./src/ticket
     restart: always
     depends_on:
@@ -142,6 +147,7 @@ services:
 
   gateway:
     container_name: games-gateway
+    image: capaths/gamesgateway
     build: ./src/gateway
     restart: "no"
     ports:
@@ -159,6 +165,7 @@ services:
 
   webapp:
     container_name: games-webapp
+    image: capaths/gameswebapp
     build: ./src/webapp
     restart: always
     ports:

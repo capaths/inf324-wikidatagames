@@ -5,7 +5,6 @@ from player.models import Player, PlayerDatabase
 from player.schemas import PlayerSchema
 from nameko.exceptions import BadRequest
 
-
 class PlayerService:
     name = "player"
 

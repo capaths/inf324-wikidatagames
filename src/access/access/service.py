@@ -47,7 +47,7 @@ class AccessService:
             "elo": 1000
         }
 
-        req = requests.post("http://player:8888/player", json=data)
+        req = requests.post("http://player:8080/player", json=data)
 
         if req.status_code == 400:
             raise ValueError("Invalid player field values")

@@ -6,4 +6,4 @@ until nc -z ${RABBIT_HOST} ${RABBIT_PORT}; do
 done
 
 echo "Starting service"
-nameko run --config config.yaml service
+nameko run --config config.yaml chat.service

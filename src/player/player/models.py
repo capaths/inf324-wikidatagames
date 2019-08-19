@@ -10,7 +10,6 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
-from nameko_sqlalchemy import DatabaseSession
 from nameko.extensions import DependencyProvider
 from sqlalchemy.orm import sessionmaker
 

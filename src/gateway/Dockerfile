@@ -10,8 +10,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY config.yaml ./
 COPY run.sh ./
 
-COPY gateway/service.py ./
-COPY gateway/schemas.py ./
+COPY gateway/ ./gateway/
 
 RUN chmod +x ./run.sh
 

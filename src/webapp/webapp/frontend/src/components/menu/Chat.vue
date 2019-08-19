@@ -41,7 +41,8 @@
                 console.log(message.data);
                 if (message.data.type === 'event')
                 {
-                    if (message.data.event === "new_message")
+                    console.log(message.data.event);
+                    if (message.data.event === 'new_message')
                     {
                         this.msgs.push(message.data.data);
                     }
@@ -57,16 +58,11 @@
         computed: {
             ...mapState('account', ['user']),
         },
-        sockets: {
-            receiveMessage(data) {
-                this.msgs.push(data);
-            },
-        },
         methods: {
             sendMessage() {
                 if (this.message === '') return;
                 this.$socket.sendObj({
-                    method: 'receive_message',
+                    method: 'process_message',
                     data: {
                         sender: this.user.username,
                         content: this.message,

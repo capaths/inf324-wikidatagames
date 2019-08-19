@@ -2,7 +2,6 @@
 from __future__ import absolute_import
 
 from nameko.rpc import RpcProxy, rpc
-from nameko.timer import timer
 from nameko.web.handlers import http
 from nameko.exceptions import BadRequest, RemoteError
 from nameko.extensions import DependencyProvider
@@ -12,7 +11,6 @@ from nameko.web.websocket import rpc as srpc
 
 from gateway.schemas import LoginSchema
 
-import json
 
 class Config(DependencyProvider):
     def get_dependency(self, worker_ctx):
@@ -91,12 +89,28 @@ class GatewayService:
         return 'subscribed to chat'
 
     @srpc
-    def receive_message(self, socket_id, sender, content):
-        self.chat_rpc.receive_message(sender, content)
+    def create_room(self, socket_id, sender, room_name):
+        room_code = self.chat_rpc.create_room(room_name)
+        self.hub.subscribe(socket_id, room_code)
 
-    @rpc
-    def broadcast_message(self, sender, content, room=None):
-        self.hub.broadcast('chat', 'new_message', {
+    @srpc
+    def subscribe_room(self, socket_id, room_code):
+        self.hub.subscribe(socket_id, room_code)
+
+    @srpc
+    def unsubscribe_room(self, socket_id, room_code):
+        self.hub.subscribe(socket_id, room_code)
+
+    @srpc
+    def process_message(self, socket_id, sender, content, room_code=None):
+        if not self.chat_rpc.validate_message(sender, content):
+            raise ValueError("Not valid message or sender")
+
+        channel = 'chat' if room_code is None else room_code
+        room_name = room_code.split(';')[1] if room_code else None
+
+        self.hub.broadcast(channel, 'new_message', {
             "sender": sender,
-            "content": content
+            "content": content,
+            "room": room_name
         })
