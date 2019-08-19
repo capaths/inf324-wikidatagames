@@ -4,37 +4,66 @@ import requests
 import json
 
 from nameko.rpc import rpc, RpcProxy
-from nameko.exceptions import RemoteError
+from nameko.dependency_providers import Config
+from nameko.extensions import DependencyProvider
+
+from urllib.parse import urljoin
 import jwt
 
 import time
 import json
 
-from secret import JWT_SECRET
+
+class PlayerREST:
+    host = "player"
+    port = 8080
+
+    def _get_url(self, path):
+        return urljoin(f"http://{self.host}:{self.port}/", path)
+
+    def post(self, path: str, payload: dict):
+        req = requests.post(self._get_url(path), json=json.dumps(payload))
+        return {
+            "content": req.content,
+            "status_code": req.status_code
+        }
+
+    def get(self, path: str):
+        req = requests.get(self._get_url(path))
+        return {
+            "content": req.content,
+            "status_code": req.status_code
+        }
 
 
-class NotAuthenticated(Exception):
-    pass
+class PlayerRESTProvider(DependencyProvider):
+    def get_dependency(self, worker_ctx):
+        return PlayerREST()
 
 
 class AccessService:
     name = 'access'
 
     player_rpc = RpcProxy("player")
+    player_rest = PlayerRESTProvider()
     auth = RpcProxy("access")
+
+    config = Config()
 
     @rpc
     def login(self, username, password):
 
-        try:
-            player = self.player_rpc.get_player(username, password)
-        except RemoteError:
-            raise NotAuthenticated()
+        player = self.player_rpc.get_player(username, password)
+
+        if player is None:
+            return None
+
+        jwt_secret = self.config.get("JWT_SECRET", "secret")
 
         token = jwt.encode({
             'username': player["username"],
             "exp": time.time() + 60
-        }, JWT_SECRET, algorithm='HS256')
+        }, jwt_secret, algorithm='HS256')
         return json.dumps({"jwt": token.decode(), "user": player})
 
     @rpc
@@ -47,9 +76,8 @@ class AccessService:
             "elo": 1000
         }
 
-        req = requests.post("http://player:8080/player", json=data)
+        req = self.player_rest.post("/player", data)
 
-        if req.status_code == 400:
-            raise ValueError("Invalid player field values")
-        elif req.status_code != 200:
-            raise RemoteError(req.content)
+        if req["status_code"] == 200:
+            return True
+        return False
