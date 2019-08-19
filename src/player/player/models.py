@@ -10,6 +10,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy_utils import EncryptedType
 from sqlalchemy_utils.types.encrypted.encrypted_type import AesEngine
 
+from nameko_sqlalchemy import DatabaseSession
+from nameko.extensions import DependencyProvider
+from sqlalchemy.orm import sessionmaker
+
 
 def get_url():
     return (
@@ -24,7 +28,6 @@ def get_url():
     )
 
 
-engine = create_engine(get_url())
 DeclarativeBase = declarative_base()
 
 
@@ -51,4 +54,21 @@ class Player(DeclarativeBase):
         return username
 
 
-DeclarativeBase.metadata.create_all(engine)
+class PlayerRepository:
+    db = None
+
+    def __init__(self, db):
+        self.db = db
+
+
+class PlayerDatabase(DependencyProvider):
+    db = None
+
+    def setup(self):
+        engine = create_engine(get_url())
+        DeclarativeBase.metadata.create_all(engine)
+        session = sessionmaker(bind=engine)
+        self.db = session()
+
+    def get_dependency(self, worker_ctx):
+        return PlayerRepository(self.db)
