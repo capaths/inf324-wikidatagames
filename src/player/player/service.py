@@ -44,8 +44,8 @@ class PlayerService:
     def get_player(self, usernm, passw):
         player = self.rep.db.query(Player).filter(Player.username == usernm).first()
         if not player:
-            raise ValueError('Player {} no encontrado'.format(usernm))
+            return None
         if player.password != passw:
-            raise ValueError('Contrasenna mal ingresada')
+            return None
 
         return PlayerSchema().dump(player).data

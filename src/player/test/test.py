@@ -22,6 +22,8 @@ def session():
     test_player = Player(username=TEST_USERNAME, password=TEST_PASSWORD, country="Chile")
     rep.db.add(test_player)
 
+    return rep
+
 """
 def test_create(session):
 
@@ -63,4 +65,4 @@ def test_get_player_by_username(session):
     service = worker_factory(PlayerService, rep=session)
 
     assert service.get_player_by_username(TEST_USERNAME) is not None
-    assert service.get_player_by_username("") is not None
+    assert service.get_player_by_username("") is None
