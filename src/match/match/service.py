@@ -48,7 +48,7 @@ class MatchService:
         return 200
 
     @http('GET','/flag')
-    def get_flag(self, request):
+    def get_flag(self):
         file1 = open('images.txt', 'r')
         sample_list = random.sample(range(0, 70), 20)
 
@@ -77,9 +77,9 @@ class MatchService:
             array.append(dicto)
             return json.dumps(array)
 
-        @rpc
-        def get_match(self, id)
-            match = self.db.query(Match).filter(Match.id = id).first()
-            if not match:
+    @rpc
+    def get_match(self, id):
+        match = self.db.query(Match).filter(Match.id = id).first()
+        if not match:
             raise NotFound('Match {} no encontrado'.format(id))
         return MatchSchema().dump(match).data
