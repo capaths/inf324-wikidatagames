@@ -1,9 +1,11 @@
-# Wikidata Game
+# FLAG*UESSER*
 
 Requerimientos:
 
 * Python >= 3.6
 * pip
+* RabbitMQ corriendo en el puerto 15672
+* **Para los servicios: Player, Match o Ticket:** PostgreSQL para los servicio Player, Match y Ticket en el puerto 5432
 
 ## Ejecución manual
 
@@ -12,7 +14,7 @@ Para correr uno de los servicios:
 ```
 cd src/<directorio-servicio>/
 pip install -r requirements.txt
-nameko run --config config.yaml access
+nameko run --config config.yaml <nombre-servicio>.service
 ```
 
 ## Ejecución por Docker Compose

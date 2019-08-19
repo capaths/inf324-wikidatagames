@@ -9,7 +9,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY config.yaml ./
 COPY run.sh ./
-COPY match/service.py ./
+COPY match/ ./match/
 
 RUN chmod +x ./run.sh
 
