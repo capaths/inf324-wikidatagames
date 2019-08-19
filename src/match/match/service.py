@@ -7,6 +7,7 @@ from match.models import Match, MatchDatabase
 from match.schemas import MatchSchema
 from nameko.exceptions import BadRequest
 
+import os
 
 class MatchService:
     name = "match"
@@ -46,7 +47,8 @@ class MatchService:
 
     @rpc
     def get_flags(self, n_flags=20):
-        file1 = open('images.txt', 'r')
+        path, _ = os.path.split(os.path.realpath(__file__))
+        file1 = open(os.path.join(path, '../images.txt'), 'r')
         sample_list = random.sample(range(0, 70), n_flags)
 
         name, url = [], []
