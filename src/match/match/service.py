@@ -1,56 +1,53 @@
 """Match Service"""
 
-from nameko.rpc import rpc
-from nameko.extensions import DependencyProvider
-from nameko.web.websocket import WebSocketHubProvider, rpc
-
 import json, random
 from nameko.web.handlers import http
-from nameko.events import EventDispatcher
 from nameko.rpc import rpc
-from nameko_sqlalchemy import DatabaseSession
-from match.models import DeclarativeBase, Player
+from match.models import Match, MatchDatabase
 from match.schemas import MatchSchema
 from nameko.exceptions import BadRequest
 
 
-# class ContainerIdentifier(DependencyProvider):
-#    def get_dependency(self, worker_ctx):
-#        return id(self.container)
-
 class MatchService:
     name = "match"
-    db = DatabaseSession(DeclarativeBase)
+    rep = MatchDatabase()
+
+    @rpc
+    def create_match(self, username1, username2, score1, score2):
+        if score1 > score2:
+            result = 1
+        elif score2 > score1:
+            result = 2
+        else:
+            result = 0
+
+        try:
+            self.rep.create_match(username1, username2, score1, score2, result)
+        except Exception:
+            return False
+        return True
 
     @http('POST', '/match')
-    def create_match(self, request):
-        schema = TicketSchema(strict=True)
+    def post_match(self, request):
+        schema = MatchSchema(strict=True)
         try:
             match_data = schema.loads(request.get_data(as_text=True)).data
         except ValueError as exc:
             raise BadRequest("Invalid json: {}".format(exc))
 
-        idPlayer1 = match_data['idPlayer2']
-        idPlayer2 = match_data['idPlayer1']
-        scorePlayer1 = match_data['scorePlayer1']
-        scorePlayer2 = match_data['scorePlayer2']
-        result = match_data['result']
+        username1 = match_data['username1']
+        username2 = match_data['username2']
+        score1 = match_data['scorePlayer1']
+        score2 = match_data['scorePlayer2']
 
-        match = Match(idPlayer1=idPlayer1, idPlayer2=idPlayer2, scorePlayer1=scorePlayer1, scorePlayer1=scorePlayer2,
-                      result=result)
-        self.db.add(match)
-        self.db.commit()
+        if self.create_match(username1, username2, score1, score2):
+            return 200
+        return 500
 
-        # self.event_dispatcher('order_created', {
-        #    'order': order,
-        # })
-
-        return 200
-
-    @http('GET','/flag')
-    def get_flag(self):
+    @rpc
+    def get_flags(self, n_flags=20):
         file1 = open('images.txt', 'r')
-        sample_list = random.sample(range(0, 70), 20)
+        sample_list = random.sample(range(0, 70), n_flags)
 
         name, url = [], []
         for i in file1:
@@ -60,26 +57,24 @@ class MatchService:
                 url.append(splitter[3])
 
         data = [{"name": t, "image_url": s} for t, s in zip(name, url)]
-        return json.dumps(data)
+        return data
 
     @rpc
     def get_all_match(self):
-        match = self.db.query(Match).order_by(Match.id)
+        matches = self.rep.get_all_matches()
         array = []
-        for instance in match:
-            dicto = {}
+        for instance in matches:
+            dicto = dict()
             dicto['id'] = instance.id
-            dicto['idPlayer1'] = instance.idPlayer1
-            dicto['idPlayer2'] = instance.idPlayer2
-            dicto['scorePlayer1'] = instance.scorePlayer1match
-            dicto['scorePlayer2'] = instance.scorePlmatch
+            dicto['username1'] = instance.username1
+            dicto['username2'] = instance.username2
+            dicto['score1'] = instance.scoreP1
+            dicto['score2'] = instance.scoreP2
             dicto['result'] = instance.result
             array.append(dicto)
             return json.dumps(array)
 
     @rpc
-    def get_match(self, id):
-        match = self.db.query(Match).filter(Match.id = id).first()
-        if not match:
-            raise NotFound('Match {} no encontrado'.format(id))
-        return MatchSchema().dump(match).data
+    def get_player_matches(self, username):
+        matches = self.rep.get_player_matches(username)
+        return matches
